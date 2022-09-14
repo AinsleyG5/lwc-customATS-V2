@@ -1,0 +1,25 @@
+.slds-button.slds-button_text-destructive {
+    position: absolute;
+    right: 5rem;
+    margin: 5px;
+}
+
+.refresh-icn, .like-icn {
+    --sds-c-icon-color-foreground-default: rgb(0, 112, 210);
+    --sds-c-icon-color-foreground: orange;
+    --sds-c-icon-color-background: white;
+ }
+
+.full-height {
+    height: 100vh;
+}
+
+.container {
+    background-color: #fafaf9;
+    position: relative;
+    min-height: 400px;
+    max-height: 700px;;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+}

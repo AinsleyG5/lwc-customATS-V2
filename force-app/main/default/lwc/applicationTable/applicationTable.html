@@ -1,0 +1,260 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <template if:false={loading}>
+
+        <header class="demo-only-element slds-theme_default slds-border_bottom slds-p-around_small" style="z-index:1">
+            <div class="slds-grid slds-grid_align-spread slds-m-bottom_medium slds-m-top_medium">
+                <div class="slds-grid slds-col_bump-right slds-size_3-of-12">
+                    <template if:true={options}>
+                        <div class="slds-form-element_horizontal">
+                            <div class="slds-form-element__control">
+                                <lightning-combobox name="Filter"
+                                                    label="Filter"
+                                                    value={selectedValue}
+                                                    placeholder="All Records"
+                                                    options={options}
+                                                    onchange={handleChange}></lightning-combobox>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <div class="slds-grid slds-grid_align-spread">
+                    <div class="slds-m-left_xx-small">
+                        <button title="refresh" class="slds-button slds-button_icon slds-button_icon-border-filled">
+                            <lightning-icon size="x-small" icon-name="utility:refresh" alternative-text="Refresh" title="Refresh" class="refresh-icn" onclick={refreshApp}></lightning-icon>
+                        </button>
+                    </div>
+                    <div class="slds-m-left_xx-small">
+                        <button title="refresh" class="slds-button slds-button_icon slds-button_icon-border-filled">
+                            <lightning-icon size="x-small" icon-name="utility:left" alternative-text="Move Backward" title="Move Backward" class="like-icn"></lightning-icon>
+                        </button>
+                    </div>
+                    <div class="slds-m-left_xx-small">
+                        <button title="refresh" class="slds-button slds-button_icon slds-button_icon-border-filled">
+                            <lightning-icon size="x-small" icon-name="utility:right" alternative-text="Move Forward" title="Move Forward" class="like-icn"></lightning-icon>
+                        </button>
+                    </div>
+                    <div class="slds-m-left_xx-small">
+                        <button data-name="promote" title="refresh" disabled={quickPromoteState} class="slds-button slds-button_icon slds-button_icon-border-filled" onclick={updateApplicationButton}>
+                            <lightning-icon size="x-small" icon-name="utility:like" alternative-text="Quick Promote" title="Quick Promote" class="like-icn"></lightning-icon>
+                        </button>
+                    </div>
+                    <div class="slds-m-left_xx-small">
+                        <button data-name="demote" title="refresh" disabled={quickPromoteState} class="slds-button slds-button_icon slds-button_icon-border-filled" onclick={updateApplicationButton}>
+                            <lightning-icon size="x-small" icon-name="utility:dislike" alternative-text="Quick Demote" title="Quick Demote" class="like-icn"></lightning-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="demo-only-element container">
+
+            <template if:true={jobAppData}>
+                <div class="slds-box design">
+                        <lightning-datatable
+                            hide-checkbox-column="true"
+                            onrowaction={handleRowAction}
+                            data={jobAppData}
+                            columns={columns}
+                            key-field="Id">
+                        </lightning-datatable>
+                </div>
+            </template>
+            <template if:false={jobAppData}>
+                <p>No Onboarding Records exist for this candiate</p>
+            </template>
+            <template if:true={error}>
+                <p>There seems to have been some kind of error: </p>
+                <p>{ error }</p>
+            </template>
+
+            <template if:true={modalContainer}>
+                <div class="slds-panel slds-size_full slds-panel_docked slds-panel_docked-right slds-panel_drawer slds-is-open" aria-hidden="false" id="example-unique-id-8" style="z-index:10; position:absolute; right:0px;">
+                    <div class="slds-panel__header">
+                    <h2 class="slds-panel__header-title slds-text-heading_small slds-truncate" title="Panel Header">
+                        <lightning-icon size="small" icon-name="standard:contact"></lightning-icon>
+                        &nbsp;
+                        {applicantName}
+                    </h2>
+                    <div class="slds-panel__header-actions">
+                        <div class="slds-m-left_xx-small">
+                            <button data-name="back" title="Back" class="slds-button slds-button_icon slds-button_icon-border-filled" onclick={tabNextCandidate}>
+                                <lightning-icon size="x-small" icon-name="utility:left" alternative-text="Back" title="Back" class="like-icn"></lightning-icon>
+                            </button>
+                        </div>
+                        <div class="slds-m-left_xx-small">
+                            <button data-name="next" title="Next" class="slds-button slds-button_icon slds-button_icon-border-filled" onclick={tabNextCandidate}>
+                                <lightning-icon size="x-small" icon-name="utility:right" alternative-text="Next" title="Next" class="like-icn"></lightning-icon>
+                            </button>
+                        </div>
+                        <lightning-button-icon alternative-text="" class="slds-panel__close" icon-name="utility:close" size="small" variant="container" onclick={handleCloseClick}></lightning-button-icon>
+                    </div>
+                    </div>
+                    <div class="slds-panel__body">
+                        <div class="slds-m-around_x-small">
+                            <lightning-tabset>
+                                <lightning-tab label="Market Intelligence" value=0 onactive={tabClick}>
+                                        <template if:true={marketIntelligence}>
+                                            <ul class="slds-timeline">
+                                                <template for:each={marketIntelligence} for:item="mi">
+                                                    <c-market-intelligence-timeline
+                                                        key={mi.Id}
+                                                        mi-data={mi}>
+                                                    </c-market-intelligence-timeline>
+                                                </template>
+                                            </ul>
+                                        </template>
+                                        <template if:true={error}>
+                                            <p>Error.  Couldn't fetch any market intelligence.  Oh no.</p>
+                                        </template>
+                                        <template if:true={noMIData}>
+                                            <p> { noMIData } </p>
+                                        </template>
+                                    <div class="slds-m-around_x-small">
+                                        <button class="slds-button slds-button_text-destructive" onclick={closeModalAction}>Close</button>
+                                    </div>
+                                </lightning-tab>
+                                <lightning-tab label="Assignment Contact History" value=1 onactive={tabClick}>
+                                    <template if:true={showTab1}>
+                                        <ul class="slds-timeline">
+                                            <template if:true={jobNotes}>
+                                                <template for:each={jobNotes} for:item="taskAndEvent">
+                                                    <c-application-activity-timeline
+                                                        key={taskAndEvent.Id}
+                                                        task-and-event={taskAndEvent}>
+                                                    </c-application-activity-timeline>
+                                                </template>
+                                            </template>
+                                            <template if:true={error}>
+                                                <p>Error.  Please contact your Salesforce administrator</p>
+                                            </template>
+                                            <template if:true={noJobNoteData}>
+                                                <p> { noJobNoteData } </p>
+                                            </template>
+                                        </ul>
+                                        <div class="slds-m-around_x-small">
+                                            <button class="slds-button slds-button_text-destructive" onclick={closeModalAction}>Close</button>
+                                        </div>
+                                    </template>
+                                </lightning-tab>
+                                <lightning-tab label="Full Detailed Contact History" value=2 onactive={tabClick}>
+                                    <template if:true={showTab2}>
+                                        <ul class="slds-timeline">
+                                            <template if:true={tasksAndEvents}>
+                                                <template for:each={tasksAndEvents} for:item="taskAndEvent">
+                                                    <c-application-activity-timeline
+                                                        key={taskAndEvent.Id}
+                                                        task-and-event={taskAndEvent}>
+                                                    </c-application-activity-timeline>
+                                                </template>
+                                            </template>
+                                            <template if:true={error}>
+                                                <p>No events were found</p>
+                                            </template>
+                                        </ul>
+                                    </template>
+                                </lightning-tab>
+                                <lightning-tab label="Employment History" value=3 onactive={tabClick}>
+                                    <template if:true={empHist}>
+                                        <c-emp-hist-table emp-hist-data={empHist}></c-emp-hist-table>
+                                        <!-- onemphistorychange={handleEmpHistoryChange} -->
+                                    </template>
+                                </lightning-tab>
+                                <lightning-tab label="Education">
+                                    Four Content !
+                                </lightning-tab>
+                                <lightning-tab label="Person Documents">
+                                    Five Content !
+                                </lightning-tab>
+                            </lightning-tabset>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- <template if:true={modalContainer}>
+                <div class="slds-m-around_x-small">
+
+                    <lightning-tabset>
+                        <lightning-tab label="Assignment Contact History" value=1 onactive={tabClick}>
+                            <template if:true={showTab1}>
+                                <ul class="slds-timeline">
+                                    <template if:true={jobNotes}>
+                                        <template for:each={jobNotes} for:item="taskAndEvent">
+                                            <c-application-activity-timeline
+                                                key={taskAndEvent.Id}
+                                                task-and-event={taskAndEvent}>
+                                            </c-application-activity-timeline>
+                                        </template>
+                                    </template>
+                                    <template if:true={error}>
+                                        <p>Error.  Please contact your Salesforce administrator</p>
+                                    </template>
+                                    <template if:true={noJobNoteData}>
+                                        <p> { noJobNoteData } </p>
+                                    </template>
+                                </ul>
+                                <div class="slds-m-around_x-small">
+                                    <button class="slds-button slds-button_text-destructive" onclick={closeModalAction}>Close</button>
+                                </div>
+                            </template>
+                        </lightning-tab>
+                        <lightning-tab label="Full Detailed Contact History" value=2 onactive={tabClick}>
+                            <template if:true={showTab2}>
+                                <ul class="slds-timeline">
+                                    <template if:true={tasksAndEvents}>
+                                        <template for:each={tasksAndEvents} for:item="taskAndEvent">
+                                            <c-application-activity-timeline
+                                                key={taskAndEvent.Id}
+                                                task-and-event={taskAndEvent}>
+                                            </c-application-activity-timeline>
+                                        </template>
+                                    </template>
+                                    <template if:true={error}>
+                                        <p>No events were found</p>
+                                    </template>
+                                </ul>
+                            </template>
+                        </lightning-tab>
+                        <lightning-tab label="Employment History" value=3 onactive={tabClick}>
+                            <template if:true={empHist}>
+                                <c-emp-hist-table emp-hist-data={empHist}></c-emp-hist-table>
+                            </template>
+                        </lightning-tab>
+                        <lightning-tab label="Education">
+                            Four Content !
+                        </lightning-tab>
+                        <lightning-tab label="Person Documents">
+                            Five Content !
+                        </lightning-tab>
+                    </lightning-tabset>
+
+                </div>
+            </template> -->
+
+        </div>
+
+        <div class="slds-grid">
+            <div class="slds-p-around_small slds-size_12-of-12">
+                <div class="slds-align_absolute-center">
+                    <div role="group" class="slds-button-group">
+                        <button type="button" disabled={buttonBool} class="slds-button slds-button_neutral">
+                            <lightning-icon size="x-small" icon-name="utility:left" alternative-text="Previous Page" title="Previous Page" class="left-icn"></lightning-icon>
+                        </button>
+                        <button type="button" class="slds-button slds-button_brand">
+                            1
+                        </button>
+                        <button type="button" class="slds-button slds-button_neutral">
+                            <lightning-icon size="x-small" icon-name="utility:right" alternative-text="Next Page" title="Next Page" class="right-icn"></lightning-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </template>
+    <template if:true={loading}>
+        <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+    </template>
+</template>

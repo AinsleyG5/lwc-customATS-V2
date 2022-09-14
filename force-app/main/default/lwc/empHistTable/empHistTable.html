@@ -1,0 +1,13 @@
+<template>
+    <template if:true={empHistData}>
+        <div class="slds-box design">
+                <lightning-datatable
+                    hide-checkbox-column="true"
+                    onrowaction={handleRowAction}
+                    data={empHistData}
+                    columns={columns}
+                    key-field="Id">
+                </lightning-datatable>
+        </div>
+    </template>
+</template>
